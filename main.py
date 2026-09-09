@@ -3,6 +3,7 @@ print("Hello World!")
 import gudhi as gd
 from Bio.PDB import *
 import matplotlib.pyplot as plt
+from distance import EuclideanDist
 
 parser = MMCIFParser()
 structure = parser.get_structure("MyFirstStructure", "data/364D.cif")
@@ -11,9 +12,10 @@ coordinates = []
 for atom in atoms:
     coordinates.append(atom.get_coord())
 
-#Euclidean distance - get those that are <= the threshold and store them in
-# a separate list. Then you can loop over and plot them.
+qualified = EuclideanDist(coordinates, 5)
+print(qualified)
 
+"""
 filtration = gd.RipsComplex(points=coordinates, max_edge_length=3)
 tree = filtration.create_simplex_tree()
 tree.collapse_edges()
@@ -29,7 +31,7 @@ zCoords = []
 fig = plt.figure()
 ax = fig.add_subplot(projection="3d")
 
-"""
+
 for atom in atoms:
     coordinates = atom.get_coord().tolist()
     xCoords.append(coordinates[0])
