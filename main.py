@@ -5,16 +5,43 @@ from Bio.PDB import *
 import matplotlib.pyplot as plt
 
 parser = MMCIFParser()
-structure = parser.get_structure("MyFirstStructure", "data/9ZBV.cif")
-
-# print(structure.center_of_mass())
-
+structure = parser.get_structure("MyFirstStructure", "data/364D.cif")
 atoms = structure.get_atoms()
 coordinates = []
-
 for atom in atoms:
-    coordinates.append(atom.get_coord().tolist())
+    coordinates.append(atom.get_coord())
+
+#Euclidean distance - get those that are <= the threshold and store them in
+# a separate list. Then you can loop over and plot them.
+
+filtration = gd.RipsComplex(points=coordinates, max_edge_length=3)
+tree = filtration.create_simplex_tree()
+tree.collapse_edges()
+pairs = tree.persistence_pairs()
+
+print(pairs[1])
+
+atoms = structure.get_atoms()
+xCoords = []
+yCoords = []
+zCoords = []
+
+fig = plt.figure()
+ax = fig.add_subplot(projection="3d")
+
+"""
+for atom in atoms:
+    coordinates = atom.get_coord().tolist()
+    xCoords.append(coordinates[0])
+    yCoords.append(coordinates[1])
+    zCoords.append(coordinates[2])
+    #coordinates.append(atom.get_coord().tolist())
     
+
+fig = plt.figure()
+ax = fig.add_subplot(projection="3d")
+ax.scatter(xCoords, yCoords, zCoords, s=1)
+plt.show()
 
 
 #Vietoris-Rips filtration
@@ -25,6 +52,10 @@ pairs = tree.persistence_pairs()
 
 #intervals = tree.persistence_intervals_in_dimension(3)
 #print(intervals)
+
+
+Try a simpler structure like the one in the arXiv paper, 
+try visualising that too with the links between the points.
 
 
 fig = plt.figure()
@@ -43,4 +74,4 @@ for pair in pairs:
 ax.scatter(births, deaths, s=1)
 
 plt.show()
-
+"""
