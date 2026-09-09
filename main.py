@@ -12,8 +12,7 @@ coordinates = []
 for atom in atoms:
     coordinates.append(atom.get_coord())
 
-qualified = EuclideanDist(coordinates, 5)
-print(qualified)
+qualified = EuclideanDist(coordinates, 2.5)
 
 """
 filtration = gd.RipsComplex(points=coordinates, max_edge_length=3)
@@ -22,7 +21,7 @@ tree.collapse_edges()
 pairs = tree.persistence_pairs()
 
 print(pairs[1])
-
+"""
 atoms = structure.get_atoms()
 xCoords = []
 yCoords = []
@@ -43,9 +42,18 @@ for atom in atoms:
 fig = plt.figure()
 ax = fig.add_subplot(projection="3d")
 ax.scatter(xCoords, yCoords, zCoords, s=1)
+
+for pair in qualified:
+    xs = [pair[0][0], pair[1][0]]
+    ys = [pair[0][1], pair[1][1]]
+    zs = [pair[0][2], pair[1][2]]
+    ax.plot(xs, ys, zs)
+
 plt.show()
 
 
+
+"""
 #Vietoris-Rips filtration
 filtration = gd.RipsComplex(points=coordinates, max_edge_length=3)
 tree = filtration.create_simplex_tree()
@@ -54,10 +62,6 @@ pairs = tree.persistence_pairs()
 
 #intervals = tree.persistence_intervals_in_dimension(3)
 #print(intervals)
-
-
-Try a simpler structure like the one in the arXiv paper, 
-try visualising that too with the links between the points.
 
 
 fig = plt.figure()
