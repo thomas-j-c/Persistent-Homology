@@ -1,27 +1,58 @@
-print("Hello World!")
-
 import gudhi as gd
 from Bio.PDB import *
 import matplotlib.pyplot as plt
 from distance import EuclideanDist
 
 parser = MMCIFParser()
-structure = parser.get_structure("MyFirstStructure", "data/364D.cif")
+structure = parser.get_structure("MyFirstStructure", "data/9ZBV.cif")
 atoms = structure.get_atoms()
-coordinates = []
-for atom in atoms:
-    coordinates.append(atom.get_coord())
 
-qualified = EuclideanDist(coordinates, 2.5)
+xs = []
+ys = []
+zs = []
 
+atomsList = [x.get_coord() for x in atoms]
+
+filtration = gd.RipsComplex(points=atomsList, max_edge_length=0.5)
+tree = filtration.create_simplex_tree(max_dimension=3)
+
+rips = tree.get_filtration()
+
+for splx in list(rips):
+    minimum = 30
+    if len(splx[0]) == 2:
+        if splx[1] < minimum:
+            minimum = splx[1]
+
+        vertices = splx[0] ## List of 3 vertices
+
+        for vertex in vertices:
+            atomCoords = atomsList[vertex-1].tolist()
+            xs.append(atomCoords[0])
+            ys.append(atomCoords[1])
+            zs.append(atomCoords[2])
+                
+
+print(minimum)
+fig = plt.figure()
+ax = fig.add_subplot(projection="3d")
+ax.plot(xs, ys)
+plt.show()
+
+## Use the github thing on firefox
 """
-filtration = gd.RipsComplex(points=coordinates, max_edge_length=3)
-tree = filtration.create_simplex_tree()
-tree.collapse_edges()
-pairs = tree.persistence_pairs()
+points = np.array([filtration.get_point(i) for i in range(tree.num_vertices())])
+
+triangles = np.array([s[0] for s in tree.get_skeleton(2) if len(s[0]) <= 2 and s[1] <= 0.005])
+
+fig = plt.figure()
+ax = fig.add_subplot(projection="3d")
+ax.plot_trisurf(points[:,0], points[:,1], points[:,2], triangles=triangles)
+plt.show()
+
 
 print(pairs[1])
-"""
+
 atoms = structure.get_atoms()
 xCoords = []
 yCoords = []
@@ -53,7 +84,6 @@ plt.show()
 
 
 
-"""
 #Vietoris-Rips filtration
 filtration = gd.RipsComplex(points=coordinates, max_edge_length=3)
 tree = filtration.create_simplex_tree()
